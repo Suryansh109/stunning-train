@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generative AI Query Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #queryForm {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #queryForm input, #queryForm button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #queryForm button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        #queryForm button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            white-space: pre-wrap;
+            display: none; /* Hide initially */
+        }
+        .response-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .response-content {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generative AI Query Engine</h1>
+    <form id="queryForm" enctype="multipart/form-data">
+        <input type="text" id="query" name="query" placeholder="Enter your query" required>
+        <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.txt">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response">
+        <div class="response-title">Generated Response:</div>
+        <div class="response-content"></div>
+    </div>
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('query', document.getElementById('query').value);
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            const responseElement = document.getElementById('response');
+            const responseContent = document.querySelector('.response-content');
+            responseContent.textContent = 'Loading...';
+            responseElement.style.display = 'block';  // Ensure the response is shown
+
+            try {
+                const response = await fetch('/query', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                responseContent.textContent = data;
+                console.log(data)
+            } catch (error) {
+                responseContent.textContent = 'Error: ' + error;
+            }
+        });
+    </script>
+</body>
+</html>
