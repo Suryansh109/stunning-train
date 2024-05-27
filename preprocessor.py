@@ -1,4 +1,3 @@
-import openai
 import PyPDF2
 from flask import Flask, request, jsonify, send_from_directory
 import os
@@ -28,8 +27,7 @@ def extract_text_from_file(file_path):
     file_extension = file_path.rsplit('.', 1)[1].lower()
     if file_extension == 'pdf':
         return extract_text_from_pdf(file_path)
-    elif file_extension in {'doc', 'docx'}:
-        return extract_text_from_doc(file_path)
+    
     elif file_extension == 'txt':
         with open(file_path, 'r', encoding='utf-8') as file:
             return file.read()
