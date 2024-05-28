@@ -63,17 +63,34 @@ def query():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         file_text = extract_text_from_file(file_path)
-    
-    documents = search_documents(user_query)
-    doc_contents = ' '.join([doc['content'][0] for doc in documents])
 
-    combined_prompt = f"Based on the following documents: {doc_contents} \n"
     if file_text:
-        combined_prompt += f"And based on the uploaded file content: {file_text} \n"
+        combined_prompt = f"And based on the uploaded file content: {file_text} \n"
     combined_prompt += f"Answer the query: {user_query}"
+    print(combined_prompt)
 
     ai_response = generate_response(combined_prompt)
-    return jsonify( ai_response)
+    return jsonify(ai_response)
+
+@app.route('/summarize', methods=['POST'])
+def summarize():
+    user_query = request.form.get('summarize')
+    file = request.files.get('file')
+
+    file_text = ""
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        file_text = extract_text_from_file(file_path)
+    
+    if file_text:
+        combined_prompt = f"And based on the uploaded file content: {file_text} \n"
+    combined_prompt += f"Summarize"
+    print(combined_prompt)
+
+    ai_response = generate_response(combined_prompt)
+    return jsonify(ai_response)
 
 if __name__ == '__main__':
     app.run(debug=True)
